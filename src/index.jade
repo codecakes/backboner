@@ -1,0 +1,20 @@
+extends _layouts/base
+
+include _modules/link/link
+
+block content
+  .container
+    .yeogurt-info
+      h1 Shopping Cart Price Calculator
+      div(id='main')
+        h2
+          != 'My Services'
+        ul(id='services')
+          // services inserted by backbone view here
+        p(id='total')
+          | 'total:'
+          span(id='total-value')
+            | '$0'
+
+
+  // code.version v1.5.2
