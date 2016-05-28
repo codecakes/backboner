@@ -31,7 +31,7 @@ let Preloadcart = function ( $, Backbone, _ ) {
       getChecked: function () {
         // console.log(`checking ${this.type}`);
         return this.where({checked:true});
-      },
+      }
     }),
 
     services = new ServiceList([
@@ -127,10 +127,13 @@ let Preloadcart = function ( $, Backbone, _ ) {
 
       render: function () {
         let that = this;
-        _.each(this.collection.getChecked(), function(each) {
-          that.total += each.get('price');
-        });
 
+        this.total = 0;
+        _(this.collection.getChecked()).each( function (model) {
+          this.total += model.get('price');
+        }, this);
+
+        // console.log(`total price is ${this.total}`);
         this.$('#total-value').text(`\$${this.total}`);
       }
     }),
