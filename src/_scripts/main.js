@@ -5,21 +5,17 @@
 
 // import $ from 'jquery';
 import Link from '../_modules/link/link';
+import Preloadcart from '../_modules/preloadcart/preloadCart';
 
 // first load all dependent libs
 let loadScripts = ( () => {
   let
-    scripts = [
-      // 'https://code.jquery.com/jquery-2.2.3.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'
-    ],
-    appendFrag = document.createDocumentFragment(),
-    script,
-    src = '',
-    pendingScripts = [],
-    topScript = document.scripts[0],
-    stateChange = () => {
+    // scripts = [
+    //   // 'https://code.jquery.com/jquery-2.2.3.min.js',
+    //   'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js',
+    //   'https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'
+    // ],
+    stateChange = (pendingScripts, topScript) => {
       let pendingScript;
       while (pendingScripts[0]) {
         // if script has loaded downloading
@@ -32,7 +28,14 @@ let loadScripts = ( () => {
         }
       }
     },
-    loadScript = () => {
+    loadScript = (scripts) => {
+      let
+        appendFrag = document.createDocumentFragment(),
+        script,
+        src = '',
+        pendingScripts = [],
+        topScript = document.scripts[0];
+
       while (src = scripts.shift()) {
         script = document.createElement('script');
         if ('async' in topScript) {
@@ -43,7 +46,9 @@ let loadScripts = ( () => {
         else if (topScript.readyState) {
           // IE<10
           pendingScripts.push(script);
-          script.onreadystatechange = stateChange;
+          script.onreadystatechange = (pendingScripts, topScript) => {
+            stateChange(pendingScripts, topScript);
+          };
         }
         else {
           script.defer = true;
@@ -57,15 +62,27 @@ let loadScripts = ( () => {
         resolve();
       });
     };
-  loadScript()
+
+  loadScript(['https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js'])
   .then(() => {
-    if (!!window.jQuery) {
-      let $ = window.jQuery;
-      $(() => {
-        new Link(); // Activate Link modules logic
-        console.log('Welcome to Yeogurt!');
-      });
-    }
+    return loadScript(['https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js'
+    ]);
+  })
+  .then(() => {
+    // console.log('ínside then');
+    document.addEventListener('readystatechange', (evt) => {
+      // console.log(document.readyState);
+      if (document.readyState === 'complete') {
+        let
+          $ = window.jQuery;
+        $( function start () {
+          // console.log(this);
+          // new Link(); // Activate Link modules logic
+          Preloadcart($, Backbone, _);
+        });
+      }
+    });
   });
 })();
 
