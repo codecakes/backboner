@@ -1,0 +1,11 @@
+extends ../_layouts/base
+
+block config
+  //- Correct base url pathing for this page
+  - var baseUrl = '../'
+
+block content
+  p todoapp page
+
+block scripts
+  script(src= baseUrl + 'scripts/todoapp.js', async, defer)
